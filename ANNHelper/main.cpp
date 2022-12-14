@@ -18,19 +18,9 @@ using namespace std;
 int main(int argc, const char * argv[]) {
     Source mySrc = Source();
     // Testing print matrix
-    vector<double> w1 = {
-        5,
-        5,
-        5,
-        5
-    };
+    vector<double> w1 = {5, 5, 5, 5};
     
-    vector<double> w2 = {
-        5,
-        5,
-        5,
-        5
-    };
+    vector<double> w2 = {5, 5, 5, 5};
     
     vector<vector<double>> W = {w1, w2};
     
