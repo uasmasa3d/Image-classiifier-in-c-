@@ -1,13 +1,38 @@
 // note that all images are converted into 1D array before everything starts, this contradicts some comments below but this is the right one so ignore any required modifications regarding this point.
-#include<iostream>
-#include<unordered_map>
-#include<string>
-#include<vector>
+#include <iostream>
+#include <unordered_map>
+#include <string>
+#include <vector>
 #include <iterator>
-#include"math.h"
+#include "math.h"
 
 using namespace std;
 
+/*
+ Please use consistent naming scheme, the default adapted shceme by C++
+ developers is camelCase and not snake_case, I will reedit all functions
+ and provide pull request the changes
+ */
+
+
+
+/*
+ What is dim1, dim2? Why do I even need them? You have a W matrix,
+ you can get the dim1 from W.size() and dim2 from W.at(0).size()
+ if dim1 is the number of neurons of the first layer and dim2
+ is the number of neurons in the second layer
+ 
+ What is the output of randomizeWeights?
+ We just need an initializer that initializer a draws a random weight
+ float from random distribution
+
+ We need
+ double getRandomWeight()
+ instead of
+ v<v<double>> randomizeWeights(v<v<double>> &W, int dim1, int dim2)
+ 
+ automation of weight initialization will be called from the NeuralNetwork class itself
+*/
 vector<vector<double>>& randomizeWeights(vector<vector<double>> & W, int dim1, int dim2) {
 	for (int j = 0; j < dim1; j++) {
 		vector<double> S;
@@ -18,6 +43,11 @@ vector<vector<double>>& randomizeWeights(vector<vector<double>> & W, int dim1, i
 	}
 	return W;
 }
+
+
+/*
+ Does this work?
+ */
 void printMatrix(vector<vector<double>>& W) {
 	for (int i = 0; i < W.size(); i++) {
 		for (int j = 0; j < W[i].size(); j++)
@@ -25,6 +55,11 @@ void printMatrix(vector<vector<double>>& W) {
 		cout << endl;
 	}
 }
+
+/*
+ map(str -> 2d_vector<params>) ?????
+ We can simply loop over all neurons' weights
+ */
 void printParams(unordered_map<string, vector<vector<double>>>& parameters) {
 	unordered_map<string, vector<vector<double>>>::iterator itr;
 	for (itr = parameters.begin(); itr != parameters.end(); ++itr) {
@@ -39,7 +74,12 @@ void printParams(unordered_map<string, vector<vector<double>>>& parameters) {
 		
 }
 
-unordered_map<string, vector<vector<double>>> initialize_parameters_deep(vector<int> layerDims) {
+/*
+ Is this used to get the parameters or to initialize them with dummy variables?
+ If it is used to initialize them, why is it returning an object and not void?
+ And if it is initializing them, why are we using srand(5)?
+ */
+unordered_map<string, vector<vector<double>>> initializeParametersDeep(vector<int> layerDims) {
 	/*
 	* Arguments:
     layer_dims --  array (list) containing the dimensions of each layer in our network
@@ -61,6 +101,11 @@ unordered_map<string, vector<vector<double>>> initialize_parameters_deep(vector<
 	return parameters;
 }
 
+
+/*
+ Is this tested?
+ I think it can be better done by repeated vector dot product
+ */
 vector<vector<double>> dot(vector<vector<double>>& A, vector<vector<double>>& B) {
 	vector<vector<double>> C; 
 	for (int i = 0; i < A.size(); i++) {
@@ -73,8 +118,10 @@ vector<vector<double>> dot(vector<vector<double>>& A, vector<vector<double>>& B)
 }
 
 
-
-vector<vector<double>> linearForward_Z(vector<vector<double>>& A, vector<vector<double>>& W, vector<vector<double>>& b) {
+/*
+ Linear forward should output a vector of pre-activations, not a 2D vector of activations
+ */
+vector<vector<double>> linearForwardZ(vector<vector<double>>& A, vector<vector<double>>& W, vector<vector<double>>& b) {
 	 /*Arguments:
     A -- activations from previous layer (or input data): (size of previous layer, number of examples)
     W -- weights matrix: numpy array of shape (size of current layer, size of previous layer)
@@ -83,6 +130,10 @@ vector<vector<double>> linearForward_Z(vector<vector<double>>& A, vector<vector<
     Returns:
     Z -- the input of the activation function, also called pre-activation parameter 
 	 */
+    
+    /*
+     Please assert the dimensions of A and W before dot product
+     */
 	 vector<vector<double>> Z = dot(A, W);
 	 for (int i = 0; i < Z.size(); i++)
 		 for(int j=0; j<Z[i].size();j++)
@@ -90,7 +141,10 @@ vector<vector<double>> linearForward_Z(vector<vector<double>>& A, vector<vector<
 	 return Z;
 }
 
-unordered_map<string, vector<vector<double>>> linearForward_cache(vector<vector<double>>& A, vector<vector<double>>& W, vector<vector<double>>& b) {
+/*
+ What is the difference between this and the previous?
+ */
+unordered_map<string, vector<vector<double>>> linearForwardCache(vector<vector<double>>& A, vector<vector<double>>& W, vector<vector<double>>& b) {
 	/*Arguments:
     A -- activations from previous layer (or input data): (size of previous layer, number of examples)
     W -- weights matrix: numpy array of shape (size of current layer, size of previous layer)
@@ -106,16 +160,17 @@ unordered_map<string, vector<vector<double>>> linearForward_cache(vector<vector<
 	return cache;
 }
 
+
+
 double sigmoid(double z) {
 	return 1.0 / (1.0 + exp(-z));
 }
 
 double relu(double z) {
-	if (z < 0)
-		return 0;
-	else
-		return z;
+    return z<0 ? 0 : z;
 }
+
+
 vector<int> shape(vector<vector<double>>& A) {
 	vector<int> s,w;
 	bool consistent = true;
@@ -135,12 +190,14 @@ vector<int> shape(vector<vector<double>>& A) {
 		return w;
 	}
 }
+
 void printShape(vector<int> & A) {
 	cout << "Shape  is: ( " << A[0] << " , " << A[1] << " )" << endl;
 }
+
 //activation 0 for sigmoid, 1 for relu
-vector<vector<double>> linear_activation_forward_A(vector<vector<double>> &A_prev, vector<vector<double>>& W, vector<vector<double>>& b,int activation) {
-	vector<vector<double>> Z = linearForward_Z(A_prev, W, b);
+vector<vector<double>> linearActivationForwardA(vector<vector<double>> &A_prev, vector<vector<double>>& W, vector<vector<double>>& b,int activation) {
+	vector<vector<double>> Z = linearForwardZ(A_prev, W, b);
 	if (!activation) {
 		for (int i = 0; i < Z.size(); i++) {
 			for (int j = 0; j < Z[i].size(); j++)
@@ -157,11 +214,12 @@ vector<vector<double>> linear_activation_forward_A(vector<vector<double>> &A_pre
 		cout << "wrong activation"<<endl;
 	return Z;
 }
+
 //activation 0 for sigmoid, 1 for relu
-vector<unordered_map<string, vector<vector<double>>>> linear_activation_forward_cache(vector<vector<double>>& A_prev, vector<vector<double>>& W, vector<vector<double>>& b, int activation) {
-	vector<vector<double>> Z = linearForward_Z(A_prev, W, b);
+vector<unordered_map<string, vector<vector<double>>>> linearActivationForwardCache(vector<vector<double>>& A_prev, vector<vector<double>>& W, vector<vector<double>>& b, int activation) {
+	vector<vector<double>> Z = linearForwardZ(A_prev, W, b);
 	vector<unordered_map<string, vector<vector<double>>>> cache;
-	unordered_map<string, vector<vector<double>>> linear_cache = linearForward_cache(A_prev, W, b), activation_cache;
+	unordered_map<string, vector<vector<double>>> linear_cache = linearForwardCache(A_prev, W, b), activation_cache;
 	if (!activation) {
 		for (int i = 0; i < Z.size(); i++)
 			Z.at(i).at(0) = sigmoid(Z.at(i).at(0));
@@ -177,22 +235,22 @@ vector<unordered_map<string, vector<vector<double>>>> linear_activation_forward_
 	return cache;
 }
 
-vector<vector<double>> L_model_forward_AL(vector<vector<double>>& X, unordered_map<string, vector<vector<double>>>& parameters) {
+vector<vector<double>> LModelForwardAL(vector<vector<double>>& X, unordered_map<string, vector<vector<double>>>& parameters) {
 	vector<vector<double>> A = X, A_prev, W ,b,AL;
 	int len = parameters.size();
 	for (int i = 1; i < len; i++) {
 		A_prev = A;
 		W = parameters['W' + to_string(i)];
 		b = parameters['b' + to_string(i)];
-		A = linear_activation_forward_A(A_prev, W, b , 1);
+		A = linearActivationForwardA(A_prev, W, b , 1);
 	}
 	W = parameters['W' + to_string(len)];
 	b = parameters['b' + to_string(len)];
-	AL = linear_activation_forward_A(A, W, b, 0);
+	AL = linearActivationForwardA(A, W, b, 0);
 	return AL;
 }
 
-vector<vector<unordered_map<string, vector<vector<double>>>>>& L_model_forward_caches(vector<vector<double>>& X, unordered_map<string, vector<vector<double>>>& parameters) {
+vector<vector<unordered_map<string, vector<vector<double>>>>>& LModelForwardCaches(vector<vector<double>>& X, unordered_map<string, vector<vector<double>>>& parameters) {
 	vector<unordered_map<string, vector<vector<double>>>>cache;
 	vector<vector<unordered_map<string, vector<vector<double>>>>> caches;
 	vector<vector<double>> A = X, A_prev, W, b, AL;
@@ -201,14 +259,14 @@ vector<vector<unordered_map<string, vector<vector<double>>>>>& L_model_forward_c
 		A_prev = A;
 		W = parameters['W' + to_string(i)];
 		b = parameters['b' + to_string(i)];
-		A = linear_activation_forward_A(A_prev, W, b, 1);
-		cache = linear_activation_forward_cache(A_prev, W, b, 1);
+		A = linearActivationForwardA(A_prev, W, b, 1);
+		cache = linearActivationForwardCache(A_prev, W, b, 1);
 		caches.push_back(cache);
 	}
 	W = parameters['W' + to_string(len)];
 	b = parameters['b' + to_string(len)];
-	AL = linear_activation_forward_A(A, W, b, 0);
-	cache = linear_activation_forward_cache(A, W, b, 0);
+	AL = linearActivationForwardA(A, W, b, 0);
+	cache = linearActivationForwardCache(A, W, b, 0);
 	caches.push_back(cache);
 	return caches;
 }
@@ -222,7 +280,7 @@ double computeCost(vector<vector<double>> AL, vector<vector<double>> Y) {
 	return cost;
 }
 
-vector<vector<double>> Transpose(vector<vector<double>>& A) {
+vector<vector<double>> transpose(vector<vector<double>>& A) {
 	vector<vector<double>> B;
 	for (int i = 0; i < A[i].size(); i++)
 	{
@@ -236,15 +294,15 @@ vector<vector<double>> Transpose(vector<vector<double>>& A) {
 	return B;
 }
 
-vector<vector<vector<double>>> linear_backward(vector<vector<double>> dZ, unordered_map<string, vector<vector<double>>>& cache) {
+vector<vector<vector<double>>> linearBackward(vector<vector<double>> dZ, unordered_map<string, vector<vector<double>>>& cache) {
 	vector<vector<double>> W = cache["W"];
 	vector<vector<double>>b = cache["b"];
 	vector<vector<double>> A_prev = cache["A"];
 	int m = A_prev[0].size();
 	vector<vector<double>> dA_prev, dW, db, temp;
 	vector<vector<vector<double>>>output;
-	A_prev = Transpose(A_prev);
-	W = Transpose(W);
+	A_prev = transpose(A_prev);
+	W = transpose(W);
 	dW = dot(dZ, A_prev);
 	// if it gives an error then use push back
 	for (int i = 0; i < db.size(); i++)
@@ -267,7 +325,7 @@ vector<vector<vector<double>>> linear_backward(vector<vector<double>> dZ, unorde
 	return output;
 }
 
-vector<vector<double>> relu_backward(vector<vector<double>> dA, unordered_map<string, vector<vector<double>>> cache) {
+vector<vector<double>> reluBackward(vector<vector<double>> dA, unordered_map<string, vector<vector<double>>> cache) {
 	vector<vector<double>> dZ;
 	//coping matrix
 	for (int i = 0; i < dA.size(); i++) {
@@ -285,7 +343,7 @@ vector<vector<double>> relu_backward(vector<vector<double>> dA, unordered_map<st
 	return dZ;
 }
 
-vector<vector<double>>& sigmoid_backward(vector<vector<double>> dA, unordered_map<string, vector<vector<double>>> cache) {
+vector<vector<double>>& sigmoidBackward(vector<vector<double>> dA, unordered_map<string, vector<vector<double>>> cache) {
 	vector<vector<double>> dZ;
 	vector<vector<double>> Z = cache["Z"];
 	for (int i = 0; i < Z.size(); i++)
@@ -301,20 +359,20 @@ vector<vector<double>>& sigmoid_backward(vector<vector<double>> dA, unordered_ma
 	return dZ;
 }
 
-vector<vector<vector<double>>>& linear_activation_backward(vector<vector<double>> dA, vector<unordered_map<string, vector<vector<double>>>>& cache, string activation) {
+vector<vector<vector<double>>>& linearActivationBackward(vector<vector<double>> dA, vector<unordered_map<string, vector<vector<double>>>>& cache, string activation) {
 	unordered_map<string, vector<vector<double>>> linear_cache = cache[0], activation_cache = cache[1];
 	vector<vector<vector<double>>>output,temp;
 	vector<vector<double>> dZ, dA_prev, dW, db;
 	if (activation.compare("relu") == 0) {
-		dZ = relu_backward(dA, activation_cache);
-		temp = linear_backward(dZ, linear_cache);
+		dZ = reluBackward(dA, activation_cache);
+		temp = linearBackward(dZ, linear_cache);
 		dA_prev = temp[0]; 
 		dW = temp[1];
 		db = temp[2];
 	}
 	else if (activation.compare("sigmoid") == 0) {
-		dZ = sigmoid_backward(dA, activation_cache);
-		temp = linear_backward(dZ, linear_cache);
+		dZ = sigmoidBackward(dA, activation_cache);
+		temp = linearBackward(dZ, linear_cache);
 		dA_prev = temp[0];
 		dW = temp[1];
 		db = temp[2];
@@ -325,7 +383,7 @@ vector<vector<vector<double>>>& linear_activation_backward(vector<vector<double>
 	return output;
 }
 
-unordered_map<string, vector<vector<double>>>& L_model_backward(vector<vector<double>>& AL, vector<vector<double>> & Y, vector<vector<unordered_map<string, vector<vector<double>>>>>& caches) {
+unordered_map<string, vector<vector<double>>>& LModelBackward(vector<vector<double>>& AL, vector<vector<double>> & Y, vector<vector<unordered_map<string, vector<vector<double>>>>>& caches) {
 	unordered_map<string, vector<vector<double>>> grads;
 	int len = caches.size();
 	int m = AL[0].size();
@@ -335,13 +393,13 @@ unordered_map<string, vector<vector<double>>>& L_model_backward(vector<vector<do
 		for (int j = 0; j < dAL[i].size(); j++)
 			dAL[i][j] = -((Y[i][j] / AL[i][j]) - ((1 - Y[i][j]) / (1 - AL[i][j])));
 	vector<unordered_map<string, vector<vector<double>>>> currentCache = caches[len - 1];
-	vector<vector<vector<double>>> temp = linear_activation_backward(dAL, currentCache, "sigmoid");
+	vector<vector<vector<double>>> temp = linearActivationBackward(dAL, currentCache, "sigmoid");
 	grads["dA" + to_string(len - 1)] = temp[0];
 	grads["dW" + to_string(len)] = temp[1];
 	grads["db" + to_string(len)] = temp[2];
 	for(int i = len - 1; i >= 0; i++) {
 		currentCache = caches[i];
-		temp = linear_activation_backward(grads["dA" + to_string(i + 1)], currentCache, "relu");
+		temp = linearActivationBackward(grads["dA" + to_string(i + 1)], currentCache, "relu");
 		grads["dA" + to_string(i)] = temp[0];
 		grads["dW" + to_string(i+1)] = temp[1];
 		grads["db" + to_string(i + 1)] = temp[2];
@@ -349,7 +407,7 @@ unordered_map<string, vector<vector<double>>>& L_model_backward(vector<vector<do
 	return grads;
 }
 
-unordered_map<string, vector<vector<double>>>& update_parameters(unordered_map<string, vector<vector<double>>>& params, unordered_map<string, vector<vector<double>>>& grads, double learningRate) {
+unordered_map<string, vector<vector<double>>>& updateParameters(unordered_map<string, vector<vector<double>>>& params, unordered_map<string, vector<vector<double>>>& grads, double learningRate) {
 	unordered_map<string, vector<vector<double>>> parameters = params;
 	int len = parameters.size();
 	for (int i = 0; i < len; i++) {
@@ -369,19 +427,19 @@ unordered_map<string, vector<vector<double>>>& update_parameters(unordered_map<s
 
 // CREATING THE ACTUAL MODEL
 // X should be an array of images and images has 3 dimensions so X must be a 4d vector, the first to determine each training expamle and the remmaining three for the image. To do so now requries alot of modifications in the code so will do this another time.
-unordered_map<string, vector<vector<double>>> L_layer_model(vector<vector<vector<double>>>& X, vector<vector<double>>& Y, vector<int>& layers_dims, double learningRate = 0.0075,int numIterations = 30,bool print_cost = false) {
+unordered_map<string, vector<vector<double>>> LLayerModel(vector<vector<vector<double>>>& X, vector<vector<double>>& Y, vector<int>& layers_dims, double learningRate = 0.0075,int numIterations = 30,bool print_cost = false) {
 	srand(1);
 	double cost;
 	vector<double> costs;
 	vector<vector<double>> AL;
 	vector<vector<unordered_map<string, vector<vector<double>>>>> caches;
-	unordered_map<string, vector<vector<double>>>grads, parameters = initialize_parameters_deep(layers_dims);
+	unordered_map<string, vector<vector<double>>>grads, parameters = initializeParametersDeep(layers_dims);
 	for (int i = 0; i < numIterations; i++) {
-		AL = L_model_forward_AL(X[i], parameters);
-		caches = L_model_forward_caches(X[i], parameters);
+		AL = LModelForwardAL(X[i], parameters);
+		caches = LModelForwardCaches(X[i], parameters);
 		cost = computeCost(AL, Y);
-		grads = L_model_backward(AL, Y, caches);
-		parameters = update_parameters(parameters, grads, learningRate);
+		grads = LModelBackward(AL, Y, caches);
+		parameters = updateParameters(parameters, grads, learningRate);
 
 		cout << "Cost after iteration " << i+1 << "is: "<< cost<<endl;
 	}
@@ -390,7 +448,7 @@ unordered_map<string, vector<vector<double>>> L_layer_model(vector<vector<vector
 // same goes for this X it must be an images of 3d vectors.
 bool predict(vector<vector<double>> &X, int y, unordered_map<string, vector<vector<double>>> parameters) {
 	int n = parameters.size();
-	vector<vector<double>> p = L_model_forward_AL(X, parameters);
+	vector<vector<double>> p = LModelForwardAL(X, parameters);
 	int prediction;
 	// test by printing p and look where is the value of the sigmoid unit, then use the index to comapre it with y but for now let's suppose that the value of the sigmoid unit lies in p[0][0]
 	if (p[0][0] > 0.5)

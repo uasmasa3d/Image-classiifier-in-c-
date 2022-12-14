@@ -1,14 +1,14 @@
-#include<iostream>
-#include<unordered_map>
-#include<string>
-#include<vector>
+#include <iostream>
+#include <unordered_map>
+#include <string>
+#include <vector>
 #include <iterator>
-#include"string.h"
-#include"math.h"
+#include "string.h"
+#include "math.h"
 #include "Source.cpp"
 using namespace std;
 
-int main() {
+int main(int argc, const char * argv[]) {
 	// Testing print matrix
 	vector<vector<double>> W;
 	vector<double> w1;
