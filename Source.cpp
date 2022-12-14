@@ -18,7 +18,7 @@ using namespace std;
 /*
  Please use consistent naming scheme, the default adapted shceme by C++
  developers is camelCase and not snake_case, I will reedit all functions
- and provide pull request the changes
+ and provide pull request the changes.
  */
 
 
