@@ -166,8 +166,6 @@ public:
         return cache;
     }
     
-    
-    
     double sigmoid(double z) {
         return 1.0 / (1.0 + exp(-z));
     }
@@ -175,7 +173,6 @@ public:
     double relu(double z) {
         return z<0 ? 0 : z;
     }
-    
     
     vector<int> shape(vector<vector<double>>& A) {
         vector<int> s,w;
@@ -451,6 +448,7 @@ public:
         }
         return parameters;
     }
+    
     // same goes for this X it must be an images of 3d vectors.
     bool predict(vector<vector<double>> &X, int y, unordered_map<string, vector<vector<double>>> parameters) {
         // Unused
