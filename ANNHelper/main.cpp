@@ -18,83 +18,67 @@ using namespace std;
 int main(int argc, const char * argv[]) {
     Source mySrc = Source();
     // Testing print matrix
-    vector<vector<double>> W;
-    vector<double> w1;
-    w1.push_back(5);
-    w1.push_back(5);
-    w1.push_back(5);
-    w1.push_back(5);
-    vector<double> w2;
-    w2.push_back(5);
-    w2.push_back(5);
-    w2.push_back(5);
-    w2.push_back(5);
-    W.push_back(w1);
-    W.push_back(w2);
+    vector<double> w1 = {5, 5, 5, 5};
+    
+    vector<double> w2 = {5, 5, 5, 5};
+    
+    vector<vector<double>> W = {w1, w2};
+    
+    
     mySrc.printMatrix(W);
     // Testing randomizeWeights
     
     W = mySrc.randomizeWeights(W, 3,3);
     mySrc.printMatrix(W);
     // Testing initializeParametersDeep
-    vector<int> layer_dims;
-    layer_dims.push_back(4);
-    layer_dims.push_back(8);
-    layer_dims.push_back(8);
-    layer_dims.push_back(5);
-    layer_dims.push_back(1);
+    vector<int> layer_dims = {4, 8, 8, 5, 1};
+    
+    
     unordered_map<string, vector<vector<double>>> parms;
     parms = mySrc.initializeParametersDeep(layer_dims);
     mySrc.printParams(parms);
+    
+    
     // Testing dot
     cout<<endl<< "matrix A: " << endl;
-    vector<vector<double>> A;
-    vector<double> w3;
-    w3.push_back(5);
-    w3.push_back(5);
-    w3.push_back(5);
-    w3.push_back(5);
-    vector<double> w4;
-    w4.push_back(5);
-    w4.push_back(5);
-    w4.push_back(5);
-    w4.push_back(5);
-    A.push_back(w3);
-    A.push_back(w4);
+    vector<double> w3 = {5, 5, 5, 5};
+    vector<double> w4 = {5, 5, 5, 5};
+    vector<vector<double>> A = {w3, w4};
     mySrc.printMatrix(A);
-    cout <<endl<< "matrix B: " << endl;
-    vector<vector<double>>B;
-    vector<double> w5;
-    w5.push_back(2);
-    w5.push_back(2);
-    w5.push_back(3);
-    w5.push_back(4);
-    vector<double> w6;
-    w6.push_back(9);
-    w6.push_back(7);
-    w6.push_back(6);
-    w6.push_back(4);
-    B.push_back(w5);
-    B.push_back(w6);
+    
+    
+    
+    cout << endl << "matrix B: " << endl;
+    vector<double> w5 = {2, 2, 3, 4};
+    vector<double> w6 = {9, 7, 6, 4};
+    vector<vector<double>> B = {w5, w6};
     mySrc.printMatrix(B);
-    vector<vector<double>>C = mySrc.dot(A, B);
+    
+    
+    
     cout << endl << "matrix C: " << endl;
+    vector<vector<double>> C = mySrc.dot(A, B);
     mySrc.printMatrix(C);
+    
+    
+    
     //Test shape
     vector<int> shapeofC;
-    shapeofC = mySrc.shape(C);
     cout << "shape of C is: ( " << shapeofC[0] << " , " << shapeofC[1] << " )" << endl;
+    shapeofC = mySrc.shape(C);
+    
+    
     // Test linear_forward_Z
-    vector<vector<double>> b;
-    vector<double> b1, b2;
-    b1.push_back(3);
-    b2.push_back(2);
-    b.push_back(b1);
-    b.push_back(b2);
     cout << endl << "matrix b: " << endl;
+    vector<double> b1 = {3};
+    vector<double> b2 = {2};
+    vector<vector<double>> b = {b1, b2};
     mySrc.printMatrix(b);
-    vector<vector<double>> Z = mySrc.linearForwardZ(A,B,b);
+    
+    
+    
     cout << endl << "matrix Z: " << endl;
+    vector<vector<double>> Z = mySrc.linearForwardZ(A,B,b);
     mySrc.printMatrix(Z);
     // Test linearForward_cache
     unordered_map<string, vector<vector<double>>> t_cache;
